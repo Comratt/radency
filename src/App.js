@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { CSVReader } from './Components/CSVReader/CSVReader';
+import { Table } from './Components/Table/Table';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import './App.css'
+
+
+const App = () => {
+    const [users, setUsers] = useState({});
+    const [error, setError] = useState(false);
+    const [validationError, setValidationError] = useState(false);
+
+    useEffect(() => {
+        if (users.rows) {
+            const hasError = users.rows.some((row) => {
+                return Object.keys(row).some((key) => !key.valid)
+            });
+            setValidationError(hasError);
+        }
+    }, [users]);
+    console.log(validationError)
+
+    return (
+        <div>
+            {error && <h1>Error</h1>}
+            <CSVReader
+                setData={(data) => {
+                    setUsers(data);
+                    setError(false);
+                }}
+                handleError={() => setError(true)}
+            />
+            <Table data={users} />
+        </div>
+    );
+};
 
 export default App;
